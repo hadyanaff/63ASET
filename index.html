@@ -373,7 +373,7 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
         <div class="search-filter">
           <div class="search-wrap"><i class="ti ti-search"></i><input type="text" placeholder="Search name, tag, or user..." id="search-input"></div>
           <select class="fsel" id="filter-status"><option value="">All statuses</option><option>Active</option><option>Maintenance</option><option>Inactive</option><option>Repair</option></select>
-          <select class="fsel" id="filter-type"><option value="">All types</option><option>Laptop</option><option>PC</option><option>Printer</option><option>AC</option><option>Tablet</option></select>
+          <select class="fsel" id="filter-type"><option value="">All types</option></select>
         </div>
         <div class="table-wrap">
           <table><thead><tr><th style="width:7%">Tag</th><th style="width:24%">Asset name</th><th style="width:13%">Type</th><th style="width:16%">Assigned to</th><th style="width:16%">Location</th><th style="width:12%">Status</th><th style="width:12%">Actions</th></tr></thead>
@@ -488,8 +488,16 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
       <input type="hidden" id="edit-idx">
       <div class="form-row"><label class="form-label">Asset name</label><input class="form-input" id="f-name" placeholder='e.g. MacBook Pro 14"'></div>
       <div class="form-row-2">
-        <div><label class="form-label">Tag / serial</label><input class="form-input" id="f-tag" placeholder="IT-001"></div>
-        <div><label class="form-label">Type</label><select class="form-input" id="f-type"><option>Laptop</option><option>PC</option><option>Printer</option><option>AC</option><option>Tablet</option></select></div>
+        <div><label class="form-label">Model</label><input class="form-input" id="f-tag" placeholder="e.g. MacBook Pro 14 A2442"></div>
+        <div><label class="form-label">Name</label><input class="form-input" id="f-type" placeholder="Type manually, e.g. Laptop"></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Tipe / Seri</label><input class="form-input" id="f-typeseri" placeholder="e.g. A2442"></div>
+        <div><label class="form-label">Bahan</label><input class="form-input" id="f-bahan" placeholder="e.g. Aluminium"></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Kode barang</label><input class="form-input" id="f-kode" placeholder="e.g. 03.06.02.001"></div>
+        <div><label class="form-label">Condition</label><select class="form-input" id="f-condition"><option value="Good">Good</option><option value="Bad">Bad</option><option value="Broken">Broken</option></select></div>
       </div>
       <div class="form-row-2">
         <div><label class="form-label">Assigned to</label><input class="form-input" id="f-user" placeholder="Name or team"></div>
@@ -499,6 +507,11 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
         <div><label class="form-label">Status</label><select class="form-input" id="f-status"><option>Active</option><option>Maintenance</option><option>Inactive</option><option>Repair</option></select></div>
         <div><label class="form-label">Purchase year</label><input class="form-input" id="f-year" type="number" placeholder="2024"></div>
       </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Sumber dana</label><select class="form-input" id="f-sumberdana"><option value="Pembelian/APBD">Pembelian/APBD</option><option value="Hibah">Hibah</option></select></div>
+        <div></div>
+      </div>
+      <div class="form-row"><label class="form-label">Keterangan</label><textarea class="form-input" id="f-keterangan" rows="3" placeholder="Additional notes..." style="resize:vertical;font-family:inherit"></textarea></div>
     </div>
     <div class="modal-footer">
       <button class="btn" id="btn-cancel-asset">Cancel</button>
@@ -616,7 +629,16 @@ function renderDashboard(){
     <td style="color:var(--text-muted)">${a.type}</td><td>${a.user}</td><td>${a.loc}</td><td>${statusBadge(a.status)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty-state"><i class="ti ti-inbox"></i>No assets yet. Add your first one!</td></tr>';
 }
 
+function populateTypeFilter(){
+  const sel=document.getElementById('filter-type');
+  const cur=sel.value;
+  const types=[...new Set(assets.map(a=>a.type).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">All types</option>'+types.map(t=>`<option value="${t}">${t}</option>`).join('');
+  if(types.includes(cur))sel.value=cur;
+}
+
 function renderAssets(){
+  populateTypeFilter();
   const q=(document.getElementById('search-input').value||'').toLowerCase();
   const fs=document.getElementById('filter-status').value;
   const ft=document.getElementById('filter-type').value;
@@ -721,11 +743,17 @@ function openAddAssetModal(){
   document.getElementById('edit-idx').value='';
   document.getElementById('asset-modal-title').textContent='Add Asset';
   document.getElementById('f-name').value='';
-  document.getElementById('f-tag').value='IT-'+String(nextId).padStart(3,'0');
-  document.getElementById('f-type').value='Laptop';
+  document.getElementById('f-tag').value='';
+  document.getElementById('f-type').value='';
+  document.getElementById('f-typeseri').value='';
+  document.getElementById('f-bahan').value='';
+  document.getElementById('f-kode').value='';
+  document.getElementById('f-condition').value='Good';
   document.getElementById('f-user').value='';
   document.getElementById('f-status').value='Active';
   document.getElementById('f-year').value=2024;
+  document.getElementById('f-sumberdana').value='Pembelian/APBD';
+  document.getElementById('f-keterangan').value='';
   populateLocSelect();
   document.getElementById('asset-modal').classList.add('open');
 }
@@ -737,9 +765,15 @@ function openEditAssetModal(id){
   document.getElementById('f-name').value=a.name;
   document.getElementById('f-tag').value=a.tag;
   document.getElementById('f-type').value=a.type;
+  document.getElementById('f-typeseri').value=a.typeSeri||'';
+  document.getElementById('f-bahan').value=a.bahan||'';
+  document.getElementById('f-kode').value=a.kodeBarang||'';
+  document.getElementById('f-condition').value=a.condition||'Good';
   document.getElementById('f-user').value=a.user;
   document.getElementById('f-status').value=a.status;
   document.getElementById('f-year').value=a.year||'';
+  document.getElementById('f-sumberdana').value=a.sumberDana||'Pembelian/APBD';
+  document.getElementById('f-keterangan').value=a.keterangan||'';
   populateLocSelect();
   document.getElementById('f-loc').value=a.loc;
   document.getElementById('asset-modal').classList.add('open');
@@ -755,7 +789,21 @@ document.getElementById('btn-save-asset').addEventListener('click',async()=>{
   const name=document.getElementById('f-name').value.trim();
   if(!name){document.getElementById('f-name').focus();return;}
   const editId=parseInt(document.getElementById('edit-idx').value);
-  const obj={name,tag:document.getElementById('f-tag').value.trim()||'IT-'+String(nextId).padStart(3,'0'),type:document.getElementById('f-type').value,user:document.getElementById('f-user').value.trim()||'Unassigned',loc:document.getElementById('f-loc').value,status:document.getElementById('f-status').value,year:parseInt(document.getElementById('f-year').value)||2024};
+  const obj={
+    name,
+    tag:document.getElementById('f-tag').value.trim(),
+    type:document.getElementById('f-type').value.trim(),
+    typeSeri:document.getElementById('f-typeseri').value.trim(),
+    bahan:document.getElementById('f-bahan').value.trim(),
+    kodeBarang:document.getElementById('f-kode').value.trim(),
+    condition:document.getElementById('f-condition').value,
+    user:document.getElementById('f-user').value.trim()||'Unassigned',
+    loc:document.getElementById('f-loc').value,
+    status:document.getElementById('f-status').value,
+    year:parseInt(document.getElementById('f-year').value)||2024,
+    sumberDana:document.getElementById('f-sumberdana').value,
+    keterangan:document.getElementById('f-keterangan').value.trim()
+  };
   if(editId){const i=assets.findIndex(a=>a.id===editId);if(i>=0)assets[i]={...assets[i],...obj};}
   else{assets.push({id:nextId++,...obj});}
   closeAssetModal();await saveData();refreshAll();showToast(editId?'Asset updated':'Asset added');
