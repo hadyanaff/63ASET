@@ -19,8 +19,9 @@
   --text-muted:#64748B;
   --border:#E2E8F0;
 }
-body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:var(--bg)}
-.app{display:flex;min-height:640px}
+html{height:100%}
+body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:var(--bg);min-height:100vh}
+.app{display:flex;min-height:100vh}
 
 /* ── SIDEBAR ── */
 .sidebar{width:220px;min-width:220px;background:linear-gradient(160deg,var(--sidebar-start) 0%,var(--sidebar-end) 100%);display:flex;flex-direction:column;position:relative;overflow:hidden}
@@ -117,6 +118,11 @@ thead th{padding:11px 14px;text-align:left;font-weight:700;font-size:11px;color:
 tbody tr{border-bottom:1px solid #F1F5F9;transition:background 0.1s}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:#F8FAFC}
+.kib-table{border-collapse:collapse}
+.kib-table th,.kib-table td{border:1px solid var(--border)}
+.kib-table thead th{text-transform:none;text-align:center;vertical-align:middle}
+.kib-table tbody td{white-space:normal;text-align:center}
+.kib-table tbody td.kib-left{text-align:left}
 tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
 
 /* ── BADGES ── */
@@ -489,33 +495,69 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
       <div class="form-row"><label class="form-label">Asset name</label><input class="form-input" id="f-name" placeholder='e.g. MacBook Pro 14"'></div>
       <div class="form-row-2">
         <div><label class="form-label">Model</label><input class="form-input" id="f-tag" placeholder="e.g. MacBook Pro 14 A2442"></div>
-        <div><label class="form-label">Name</label><input class="form-input" id="f-type" placeholder="Type manually, e.g. Laptop"></div>
-      </div>
-      <div class="form-row-2">
         <div><label class="form-label">Tipe / Seri</label><input class="form-input" id="f-typeseri" placeholder="e.g. A2442"></div>
+      </div>
+      <div class="form-row-2">
         <div><label class="form-label">Bahan</label><input class="form-input" id="f-bahan" placeholder="e.g. Aluminium"></div>
-      </div>
-      <div class="form-row-2">
         <div><label class="form-label">Kode barang</label><input class="form-input" id="f-kode" placeholder="e.g. 03.06.02.001"></div>
+      </div>
+      <div class="form-row-2">
         <div><label class="form-label">Condition</label><select class="form-input" id="f-condition"><option value="Good">Good</option><option value="Bad">Bad</option><option value="Broken">Broken</option></select></div>
-      </div>
-      <div class="form-row-2">
         <div><label class="form-label">Assigned to</label><input class="form-input" id="f-user" placeholder="Name or team"></div>
+      </div>
+      <div class="form-row-2">
         <div><label class="form-label">Location</label><select class="form-input" id="f-loc"></select></div>
-      </div>
-      <div class="form-row-2">
         <div><label class="form-label">Status</label><select class="form-input" id="f-status"><option>Active</option><option>Maintenance</option><option>Inactive</option><option>Repair</option></select></div>
-        <div><label class="form-label">Purchase year</label><input class="form-input" id="f-year" type="number" placeholder="2024"></div>
       </div>
       <div class="form-row-2">
+        <div><label class="form-label">Purchase year</label><input class="form-input" id="f-year" type="number" placeholder="2024"></div>
         <div><label class="form-label">Sumber dana</label><select class="form-input" id="f-sumberdana"><option value="Pembelian/APBD">Pembelian/APBD</option><option value="Hibah">Hibah</option></select></div>
-        <div></div>
       </div>
       <div class="form-row"><label class="form-label">Keterangan</label><textarea class="form-input" id="f-keterangan" rows="3" placeholder="Additional notes..." style="resize:vertical;font-family:inherit"></textarea></div>
     </div>
     <div class="modal-footer">
       <button class="btn" id="btn-cancel-asset">Cancel</button>
       <button class="btn btn-primary" id="btn-save-asset"><i class="ti ti-check"></i>Save Asset</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOCATION DETAIL MODAL -->
+<div class="modal-overlay" id="locdetail-modal">
+  <div class="modal" style="width:1280px;max-width:97vw">
+    <div class="modal-header">
+      <span class="modal-title" id="locdetail-title">Location Assets</span>
+      <button class="modal-close" id="btn-close-locdetail-modal"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <div class="table-wrap" style="border:none;border-radius:0;overflow-x:auto">
+        <table class="kib-table" style="font-size:11px;table-layout:auto;min-width:1200px">
+          <thead>
+            <tr>
+              <th rowspan="2" style="text-align:center;width:34px">No.</th>
+              <th rowspan="2">Nama Barang</th>
+              <th rowspan="2" style="text-align:center;width:60px">Jumlah</th>
+              <th rowspan="2">Merek / Model</th>
+              <th rowspan="2">No. Seri</th>
+              <th rowspan="2">Bahan</th>
+              <th rowspan="2">Th. Penerimaan / Pembelian / Pembuatan</th>
+              <th rowspan="2">No. Kode Barang</th>
+              <th colspan="3" style="text-align:center">Kondisi</th>
+              <th rowspan="2">Sumber Dana</th>
+              <th rowspan="2">Keterangan</th>
+            </tr>
+            <tr>
+              <th style="text-align:center;width:50px">Baik</th>
+              <th style="text-align:center;width:70px">Kurang Baik</th>
+              <th style="text-align:center;width:50px">Rusak</th>
+            </tr>
+          </thead>
+          <tbody id="locdetail-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="btn-close-locdetail">Close</button>
     </div>
   </div>
 </div>
@@ -578,7 +620,16 @@ let confirmCb=null;
 
 async function saveData(){
   try{ await setDoc(DATA_DOC,{assets,locations,nextId}); }
-  catch(e){ showToast('Save failed — check connection','err'); }
+  catch(e){ console.error('saveData failed:',e); showToast('Save failed — check connection','err'); }
+}
+
+// Refresh the UI immediately with the current in-memory state, then persist
+// in the background. This keeps actions like delete feeling instant even if
+// the network/Firestore write is slow, and still shows an error toast if the
+// save ultimately fails (the local change is not silently lost from view).
+function refreshThenSave(){
+  refreshAll();
+  saveData();
 }
 
 async function loadData(){
@@ -608,7 +659,7 @@ function renderDashboard(){
   document.getElementById('m-maint').textContent=maint;
   document.getElementById('m-repair').textContent=repair;
   const typeCounts={};
-  assets.forEach(a=>{typeCounts[a.type]=(typeCounts[a.type]||0)+1});
+  assets.forEach(a=>{typeCounts[a.name]=(typeCounts[a.name]||0)+1});
   const maxT=Math.max(1,...Object.values(typeCounts));
   document.getElementById('type-bars').innerHTML=Object.entries(typeCounts).sort((a,b)=>b[1]-a[1]).map(([t,c],i)=>`
     <div class="bar-wrap">
@@ -625,14 +676,14 @@ function renderDashboard(){
     </div>`).join('')||'<div style="font-size:12px;color:#aaa;text-align:center;padding:18px;font-weight:500">No assets yet</div>';
   const recent=[...assets].slice(-5).reverse();
   document.getElementById('recent-tbody').innerHTML=recent.map(a=>`<tr data-edit="${a.id}" style="cursor:pointer">
-    <td>${assetIconEl(a.type)}<span style="vertical-align:middle;font-weight:600">${a.name}</span></td>
-    <td style="color:var(--text-muted)">${a.type}</td><td>${a.user}</td><td>${a.loc}</td><td>${statusBadge(a.status)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty-state"><i class="ti ti-inbox"></i>No assets yet. Add your first one!</td></tr>';
+    <td>${assetIconEl(a.name)}<span style="vertical-align:middle;font-weight:600">${a.name}</span></td>
+    <td style="color:var(--text-muted)">${a.name}</td><td>${a.user}</td><td>${a.loc}</td><td>${statusBadge(a.status)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty-state"><i class="ti ti-inbox"></i>No assets yet. Add your first one!</td></tr>';
 }
 
 function populateTypeFilter(){
   const sel=document.getElementById('filter-type');
   const cur=sel.value;
-  const types=[...new Set(assets.map(a=>a.type).filter(Boolean))].sort();
+  const types=[...new Set(assets.map(a=>a.name).filter(Boolean))].sort();
   sel.innerHTML='<option value="">All types</option>'+types.map(t=>`<option value="${t}">${t}</option>`).join('');
   if(types.includes(cur))sel.value=cur;
 }
@@ -644,14 +695,14 @@ function renderAssets(){
   const ft=document.getElementById('filter-type').value;
   const filtered=assets.filter(a=>{
     if(fs&&a.status!==fs)return false;
-    if(ft&&a.type!==ft)return false;
+    if(ft&&a.name!==ft)return false;
     if(q&&!a.name.toLowerCase().includes(q)&&!a.tag.toLowerCase().includes(q)&&!a.user.toLowerCase().includes(q))return false;
     return true;
   });
   document.getElementById('assets-tbody').innerHTML=filtered.map(a=>`<tr>
     <td style="font-size:11px;color:var(--text-muted);font-weight:600">${a.tag}</td>
-    <td>${assetIconEl(a.type)}<span style="vertical-align:middle;font-weight:600">${a.name}</span></td>
-    <td style="color:var(--text-muted)">${a.type}</td><td>${a.user}</td><td>${a.loc}</td><td>${statusBadge(a.status)}</td>
+    <td>${assetIconEl(a.name)}<span style="vertical-align:middle;font-weight:600">${a.name}</span></td>
+    <td style="color:var(--text-muted)">${a.name}</td><td>${a.user}</td><td>${a.loc}</td><td>${statusBadge(a.status)}</td>
     <td>
       <button class="btn" style="padding:4px 9px;font-size:11px;margin-right:4px" data-edit="${a.id}"><i class="ti ti-edit"></i></button>
       <button class="btn btn-danger" style="padding:4px 9px;font-size:11px" data-delete="${a.id}"><i class="ti ti-trash"></i></button>
@@ -662,7 +713,7 @@ function renderLocations(){
   const locCounts={};
   assets.forEach(a=>{locCounts[a.loc]=(locCounts[a.loc]||0)+1});
   const cards=locations.map(loc=>`
-    <div class="loc-card">
+    <div class="loc-card" data-loc="${encodeURIComponent(loc)}" style="cursor:pointer">
       <div class="loc-card-top">
         <div class="loc-icon"><i class="ti ti-map-pin"></i></div>
         <button class="loc-del" data-delloc="${encodeURIComponent(loc)}"><i class="ti ti-trash"></i></button>
@@ -676,10 +727,37 @@ function renderLocations(){
     </div>`;
   document.getElementById('btn-open-loc-modal').addEventListener('click',openLocModal);
   document.querySelectorAll('[data-delloc]').forEach(btn=>{
-    btn.addEventListener('click',()=>confirmDeleteLoc(decodeURIComponent(btn.dataset.delloc)));
+    btn.addEventListener('click',e=>{e.stopPropagation();confirmDeleteLoc(decodeURIComponent(btn.dataset.delloc));});
+  });
+  document.querySelectorAll('.loc-card[data-loc]').forEach(card=>{
+    card.addEventListener('click',()=>openLocDetailModal(decodeURIComponent(card.dataset.loc)));
   });
   renderSettingsLoc();
 }
+
+function openLocDetailModal(loc){
+  document.getElementById('locdetail-title').textContent=loc;
+  const rows=assets.filter(a=>a.loc===loc);
+  const condCell=(a,key)=>a.condition===key?'<i class="ti ti-check" style="color:var(--primary)"></i>':'';
+  document.getElementById('locdetail-tbody').innerHTML=rows.map((a,i)=>`<tr>
+    <td>${i+1}</td>
+    <td class="kib-left" style="font-weight:600">${a.name||''}</td>
+    <td>1</td>
+    <td class="kib-left">${a.tag||''}</td>
+    <td class="kib-left">${a.typeSeri||''}</td>
+    <td class="kib-left">${a.bahan||''}</td>
+    <td>${a.year||''}</td>
+    <td class="kib-left">${a.kodeBarang||''}</td>
+    <td>${condCell(a,'Good')}</td>
+    <td>${condCell(a,'Bad')}</td>
+    <td>${condCell(a,'Broken')}</td>
+    <td class="kib-left">${a.sumberDana||''}</td>
+    <td class="kib-left">${a.keterangan||''}</td>
+  </tr>`).join('')||'<tr><td colspan="13" class="empty-state"><i class="ti ti-inbox"></i>No assets in this location yet.</td></tr>';
+  document.getElementById('locdetail-modal').classList.add('open');
+}
+document.getElementById('btn-close-locdetail-modal').addEventListener('click',()=>document.getElementById('locdetail-modal').classList.remove('open'));
+document.getElementById('btn-close-locdetail').addEventListener('click',()=>document.getElementById('locdetail-modal').classList.remove('open'));
 
 function renderSettingsLoc(){
   const el=document.getElementById('settings-loc-list');
@@ -696,8 +774,8 @@ function renderSettingsLoc(){
 
 function renderMaintenance(){
   document.getElementById('maint-tbody').innerHTML=assets.filter(a=>a.status==='Maintenance'||a.status==='Repair').map(a=>`<tr>
-    <td>${assetIconEl(a.type)}<span style="vertical-align:middle;font-weight:600">${a.name}</span></td>
-    <td style="color:var(--text-muted)">${a.type}</td><td>${a.loc}</td><td>${statusBadge(a.status)}</td>
+    <td>${assetIconEl(a.name)}<span style="vertical-align:middle;font-weight:600">${a.name}</span></td>
+    <td style="color:var(--text-muted)">${a.name}</td><td>${a.loc}</td><td>${statusBadge(a.status)}</td>
     <td><button class="btn" style="font-size:11px;padding:5px 10px" data-resolve="${a.id}"><i class="ti ti-check"></i>Resolve</button></td></tr>`).join('')||
     '<tr><td colspan="5" class="empty-state"><i class="ti ti-circle-check"></i>All clear — no issues.</td></tr>';
   document.querySelectorAll('[data-resolve]').forEach(btn=>{
@@ -744,7 +822,6 @@ function openAddAssetModal(){
   document.getElementById('asset-modal-title').textContent='Add Asset';
   document.getElementById('f-name').value='';
   document.getElementById('f-tag').value='';
-  document.getElementById('f-type').value='';
   document.getElementById('f-typeseri').value='';
   document.getElementById('f-bahan').value='';
   document.getElementById('f-kode').value='';
@@ -764,7 +841,6 @@ function openEditAssetModal(id){
   document.getElementById('asset-modal-title').textContent='Edit Asset';
   document.getElementById('f-name').value=a.name;
   document.getElementById('f-tag').value=a.tag;
-  document.getElementById('f-type').value=a.type;
   document.getElementById('f-typeseri').value=a.typeSeri||'';
   document.getElementById('f-bahan').value=a.bahan||'';
   document.getElementById('f-kode').value=a.kodeBarang||'';
@@ -792,7 +868,7 @@ document.getElementById('btn-save-asset').addEventListener('click',async()=>{
   const obj={
     name,
     tag:document.getElementById('f-tag').value.trim(),
-    type:document.getElementById('f-type').value.trim(),
+    type:name,
     typeSeri:document.getElementById('f-typeseri').value.trim(),
     bahan:document.getElementById('f-bahan').value.trim(),
     kodeBarang:document.getElementById('f-kode').value.trim(),
@@ -806,7 +882,7 @@ document.getElementById('btn-save-asset').addEventListener('click',async()=>{
   };
   if(editId){const i=assets.findIndex(a=>a.id===editId);if(i>=0)assets[i]={...assets[i],...obj};}
   else{assets.push({id:nextId++,...obj});}
-  closeAssetModal();await saveData();refreshAll();showToast(editId?'Asset updated':'Asset added');
+  closeAssetModal();refreshThenSave();showToast(editId?'Asset updated':'Asset added');
 });
 
 document.getElementById('recent-tbody').addEventListener('click',e=>{
@@ -833,7 +909,7 @@ document.getElementById('btn-save-loc').addEventListener('click',async()=>{
   if(locations.includes(name)){showToast('Location already exists','err');return;}
   locations.push(name);
   document.getElementById('loc-modal').classList.remove('open');
-  await saveData();refreshAll();showToast('Location added');
+  refreshThenSave();showToast('Location added');
 });
 document.getElementById('new-loc-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-save-loc').click();});
 
@@ -843,19 +919,23 @@ document.getElementById('btn-add-loc-settings').addEventListener('click',async()
   if(locations.includes(name)){showToast('Location already exists','err');return;}
   locations.push(name);
   document.getElementById('new-loc-input').value='';
-  await saveData();refreshAll();showToast('Location added');
+  refreshThenSave();showToast('Location added');
 });
 
 function closeConfirm(){document.getElementById('confirm-modal').classList.remove('open');confirmCb=null;}
 document.getElementById('btn-close-confirm').addEventListener('click',closeConfirm);
 document.getElementById('btn-cancel-confirm').addEventListener('click',closeConfirm);
-document.getElementById('confirm-ok').addEventListener('click',async()=>{closeConfirm();if(confirmCb)await confirmCb();});
+document.getElementById('confirm-ok').addEventListener('click',()=>{
+  const cb=confirmCb;
+  closeConfirm();
+  if(cb)cb();
+});
 
 function confirmDeleteAsset(id){
   const a=assets.find(x=>x.id===id);if(!a)return;
   document.getElementById('confirm-title').textContent='Delete asset';
   document.getElementById('confirm-msg').textContent=`Are you sure you want to delete "${a.name}"? This cannot be undone.`;
-  confirmCb=async()=>{assets=assets.filter(x=>x.id!==id);await saveData();refreshAll();showToast('Asset deleted');};
+  confirmCb=()=>{assets=assets.filter(x=>x.id!==id);refreshThenSave();showToast('Asset deleted');};
   document.getElementById('confirm-modal').classList.add('open');
 }
 
@@ -863,17 +943,17 @@ function confirmDeleteLoc(loc){
   const count=assets.filter(a=>a.loc===loc).length;
   document.getElementById('confirm-title').textContent='Delete location';
   document.getElementById('confirm-msg').textContent=`Delete "${loc}"?${count>0?` This location has ${count} asset(s) — they will become unassigned.`:''}`;
-  confirmCb=async()=>{
+  confirmCb=()=>{
     locations=locations.filter(l=>l!==loc);
     assets=assets.map(a=>a.loc===loc?{...a,loc:'(no location)'}:a);
-    await saveData();refreshAll();showToast('Location deleted');
+    refreshThenSave();showToast('Location deleted');
   };
   document.getElementById('confirm-modal').classList.add('open');
 }
 
-async function resolveAsset(id){
+function resolveAsset(id){
   const a=assets.find(x=>x.id===id);
-  if(a){a.status='Active';await saveData();refreshAll();showToast(a.name+' marked as Active');}
+  if(a){a.status='Active';refreshThenSave();showToast(a.name+' marked as Active');}
 }
 
 document.getElementById('search-input').addEventListener('input',renderAssets);
