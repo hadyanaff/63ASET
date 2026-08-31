@@ -393,7 +393,7 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
         </div>
         <div class="section-header"><span class="section-title">Recent Assets</span><button class="btn" id="btn-view-all"><i class="ti ti-arrow-right"></i>View all</button></div>
         <div class="table-wrap">
-          <table><thead><tr><th style="width:32%">Asset</th><th style="width:16%">Type</th><th style="width:20%">Assigned to</th><th style="width:18%">Location</th><th style="width:14%">Status</th></tr></thead>
+          <table><thead><tr><th style="width:29%">Asset</th><th style="width:14%">Type</th><th style="width:18%">Assigned to</th><th style="width:16%">Location</th><th style="width:9%;text-align:center">Jumlah</th><th style="width:14%">Status</th></tr></thead>
           <tbody id="recent-tbody"></tbody></table>
         </div>
       </div>
@@ -407,7 +407,7 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
           <select class="fsel" id="filter-type"><option value="">All types</option></select>
         </div>
         <div class="table-wrap">
-          <table><thead><tr><th style="width:7%">Tag</th><th style="width:24%">Asset name</th><th style="width:13%">Type</th><th style="width:16%">Assigned to</th><th style="width:16%">Location</th><th style="width:12%">Status</th><th style="width:12%">Actions</th></tr></thead>
+          <table><thead><tr><th style="width:6%">Tag</th><th style="width:21%">Asset name</th><th style="width:11%">Type</th><th style="width:14%">Assigned to</th><th style="width:14%">Location</th><th style="width:7%;text-align:center">Jumlah</th><th style="width:11%">Status</th><th style="width:12%">Actions</th></tr></thead>
           <tbody id="assets-tbody"></tbody></table>
         </div>
       </div>
@@ -564,6 +564,10 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
       <div class="form-row-2">
         <div><label class="form-label">Purchase year</label><input class="form-input" id="f-year" type="number" placeholder="2024"></div>
         <div><label class="form-label">Sumber dana</label><select class="form-input" id="f-sumberdana"><option value="Pembelian/APBD">Pembelian/APBD</option><option value="Hibah">Hibah</option></select></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Jumlah</label><input class="form-input" id="f-jumlah" type="number" min="1" step="1" placeholder="e.g. 5"></div>
+        <div></div>
       </div>
       <div class="form-row"><label class="form-label">Keterangan</label><textarea class="form-input" id="f-keterangan" rows="3" placeholder="Additional notes..." style="resize:vertical;font-family:inherit"></textarea></div>
     </div>
@@ -864,14 +868,16 @@ function assetIconEl(type){
   return `<div class="asset-icon" style="background:${typeBg[type]||'#F1F5F9'}"><i class="ti ${typeIcon[type]||'ti-package'}" style="color:${typeClr[type]||'#64748B'};font-size:14px"></i></div>`;
 }
 
+function qtyOf(a){return a.qty||1;}
 function renderDashboard(){
-  const total=assets.length,active=assets.filter(a=>a.status==='Active').length,maint=assets.filter(a=>a.status==='Maintenance').length,repair=assets.filter(a=>a.status==='Repair').length;
+  const sumQty=(list)=>list.reduce((s,a)=>s+qtyOf(a),0);
+  const total=sumQty(assets),active=sumQty(assets.filter(a=>a.status==='Active')),maint=sumQty(assets.filter(a=>a.status==='Maintenance')),repair=sumQty(assets.filter(a=>a.status==='Repair'));
   document.getElementById('m-total').textContent=total;
   document.getElementById('m-active').textContent=active;
   document.getElementById('m-maint').textContent=maint;
   document.getElementById('m-repair').textContent=repair;
   const typeCounts={};
-  assets.forEach(a=>{typeCounts[a.name]=(typeCounts[a.name]||0)+1});
+  assets.forEach(a=>{typeCounts[a.name]=(typeCounts[a.name]||0)+qtyOf(a)});
   const maxT=Math.max(1,...Object.values(typeCounts));
   document.getElementById('type-bars').innerHTML=Object.entries(typeCounts).sort((a,b)=>b[1]-a[1]).map(([t,c],i)=>`
     <div class="bar-wrap">
@@ -879,7 +885,7 @@ function renderDashboard(){
       <div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/maxT*100)}%;background:${typeClr[t]||barClrs[i%barClrs.length]}"></div></div>
     </div>`).join('')||'<div style="font-size:12px;color:#aaa;text-align:center;padding:18px;font-weight:500">No assets yet</div>';
   const locCounts={};
-  assets.forEach(a=>{locCounts[a.loc]=(locCounts[a.loc]||0)+1});
+  assets.forEach(a=>{locCounts[a.loc]=(locCounts[a.loc]||0)+qtyOf(a)});
   const maxL=Math.max(1,...Object.values(locCounts));
   document.getElementById('loc-bars').innerHTML=Object.entries(locCounts).sort((a,b)=>b[1]-a[1]).map(([l,c],i)=>`
     <div class="bar-wrap">
@@ -889,7 +895,7 @@ function renderDashboard(){
   const recent=[...assets].slice(-5).reverse();
   document.getElementById('recent-tbody').innerHTML=recent.map(a=>`<tr data-edit="${a.id}" style="cursor:pointer">
     <td>${assetIconEl(a.name)}<span style="vertical-align:middle;font-weight:600">${a.name}</span></td>
-    <td style="color:var(--text-muted)">${a.name}</td><td>${a.user}</td><td>${a.loc}</td><td>${statusBadge(a.status)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty-state"><i class="ti ti-inbox"></i>No assets yet. Add your first one!</td></tr>';
+    <td style="color:var(--text-muted)">${a.name}</td><td>${a.user}</td><td>${a.loc}</td><td style="text-align:center;font-weight:700">${qtyOf(a)}</td><td>${statusBadge(a.status)}</td></tr>`).join('')||'<tr><td colspan="6" class="empty-state"><i class="ti ti-inbox"></i>No assets yet. Add your first one!</td></tr>';
 }
 
 function populateTypeFilter(){
@@ -914,16 +920,16 @@ function renderAssets(){
   document.getElementById('assets-tbody').innerHTML=filtered.map(a=>`<tr>
     <td style="font-size:11px;color:var(--text-muted);font-weight:600">${a.tag}</td>
     <td>${assetIconEl(a.name)}<span style="vertical-align:middle;font-weight:600">${a.name}</span></td>
-    <td style="color:var(--text-muted)">${a.name}</td><td>${a.user}</td><td>${a.loc}</td><td>${statusBadge(a.status)}</td>
+    <td style="color:var(--text-muted)">${a.name}</td><td>${a.user}</td><td>${a.loc}</td><td style="text-align:center;font-weight:700">${qtyOf(a)}</td><td>${statusBadge(a.status)}</td>
     <td>
       <button class="btn" style="padding:4px 9px;font-size:11px;margin-right:4px" data-edit="${a.id}"><i class="ti ti-edit"></i></button>
       <button class="btn btn-danger" style="padding:4px 9px;font-size:11px" data-delete="${a.id}"><i class="ti ti-trash"></i></button>
-    </td></tr>`).join('')||'<tr><td colspan="7" class="empty-state"><i class="ti ti-inbox"></i>No assets match your filters.</td></tr>';
+    </td></tr>`).join('')||'<tr><td colspan="8" class="empty-state"><i class="ti ti-inbox"></i>No assets match your filters.</td></tr>';
 }
 
 function renderLocations(){
   const locCounts={};
-  assets.forEach(a=>{locCounts[a.loc]=(locCounts[a.loc]||0)+1});
+  assets.forEach(a=>{locCounts[a.loc]=(locCounts[a.loc]||0)+qtyOf(a)});
   const cards=locations.map(loc=>`
     <div class="loc-card" data-loc="${encodeURIComponent(loc)}" style="cursor:pointer">
       <div class="loc-card-top">
@@ -998,7 +1004,7 @@ function openLocDetailModal(loc){
   document.getElementById('locdetail-tbody').innerHTML=rows.map((a,i)=>`<tr>
     <td>${i+1}</td>
     <td class="kib-left" style="font-weight:600">${a.name||''}</td>
-    <td>1</td>
+    <td>${qtyOf(a)}</td>
     <td class="kib-left">${a.tag||''}</td>
     <td class="kib-left">${a.typeSeri||''}</td>
     <td class="kib-left">${a.bahan||''}</td>
@@ -1025,7 +1031,7 @@ function downloadLocationKIR(loc){
     <tr>
       <td style="text-align:center">${i+1}</td>
       <td>${a.name||''}</td>
-      <td style="text-align:center">1</td>
+      <td style="text-align:center">${qtyOf(a)}</td>
       <td>${a.tag||''}</td>
       <td>${a.typeSeri||''}</td>
       <td></td>
@@ -1167,9 +1173,9 @@ function renderMaintenance(){
 
 function renderReports(){
   const statuses=[{k:'Active',cl:'#16A34A',bg:'#DCFCE7'},{k:'Maintenance',cl:'#B45309',bg:'#FEF9C3'},{k:'Repair',cl:'#B91C1C',bg:'#FEE2E2'},{k:'Inactive',cl:'#64748B',bg:'#F1F5F9'}];
-  const maxS=Math.max(1,...statuses.map(s=>assets.filter(a=>a.status===s.k).length));
+  const maxS=Math.max(1,...statuses.map(s=>assets.filter(a=>a.status===s.k).reduce((sum,a)=>sum+qtyOf(a),0)));
   document.getElementById('report-bars').innerHTML=statuses.map(s=>{
-    const c=assets.filter(a=>a.status===s.k).length;
+    const c=assets.filter(a=>a.status===s.k).reduce((sum,a)=>sum+qtyOf(a),0);
     return `<div class="bar-wrap">
       <div class="bar-label"><span style="display:flex;align-items:center;gap:7px"><span style="width:10px;height:10px;border-radius:50%;background:${s.bg};border:2px solid ${s.cl};display:inline-block"></span>${s.k}</span><span style="font-weight:700;color:var(--text)">${c}</span></div>
       <div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/maxS*100)}%;background:${s.cl}"></div></div>
@@ -1212,6 +1218,7 @@ function openAddAssetModal(){
   document.getElementById('f-status').value='Active';
   document.getElementById('f-year').value=2024;
   document.getElementById('f-sumberdana').value='Pembelian/APBD';
+  document.getElementById('f-jumlah').value=1;
   document.getElementById('f-keterangan').value='';
   populateLocSelect();
   document.getElementById('asset-modal').classList.add('open');
@@ -1231,6 +1238,7 @@ function openEditAssetModal(id){
   document.getElementById('f-status').value=a.status;
   document.getElementById('f-year').value=a.year||'';
   document.getElementById('f-sumberdana').value=a.sumberDana||'Pembelian/APBD';
+  document.getElementById('f-jumlah').value=a.qty||1;
   document.getElementById('f-keterangan').value=a.keterangan||'';
   populateLocSelect();
   document.getElementById('f-loc').value=a.loc;
@@ -1260,6 +1268,7 @@ document.getElementById('btn-save-asset').addEventListener('click',async()=>{
     status:document.getElementById('f-status').value,
     year:parseInt(document.getElementById('f-year').value)||2024,
     sumberDana:document.getElementById('f-sumberdana').value,
+    qty:Math.max(1,parseInt(document.getElementById('f-jumlah').value)||1),
     keterangan:document.getElementById('f-keterangan').value.trim()
   };
   if(editId){const i=assets.findIndex(a=>a.id===editId);if(i>=0)assets[i]={...assets[i],...obj};}
