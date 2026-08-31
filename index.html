@@ -255,6 +255,8 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
 /* ── LOC EDIT BTN ── */
 .loc-edit{background:none;border:none;cursor:pointer;color:#CBD5E1;font-size:15px;padding:3px;transition:color 0.15s;margin-right:2px}
 .loc-edit:hover{color:var(--primary)}
+.loc-dup{background:none;border:none;cursor:pointer;color:#CBD5E1;font-size:15px;padding:3px;transition:color 0.15s;margin-right:2px}
+.loc-dup:hover{color:var(--teal)}
 
 /* ── REPORTS ── */
 .report-stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px}
@@ -936,6 +938,7 @@ function renderLocations(){
         <div class="loc-icon"><i class="ti ti-map-pin"></i></div>
         <div>
           <button class="loc-edit" data-editloc="${encodeURIComponent(loc)}"><i class="ti ti-edit"></i></button>
+          <button class="loc-dup" data-duploc="${encodeURIComponent(loc)}"><i class="ti ti-copy"></i></button>
           <button class="loc-del" data-delloc="${encodeURIComponent(loc)}"><i class="ti ti-trash"></i></button>
         </div>
       </div>
@@ -953,10 +956,29 @@ function renderLocations(){
   document.querySelectorAll('[data-editloc]').forEach(btn=>{
     btn.addEventListener('click',e=>{e.stopPropagation();openRenameLocModal(decodeURIComponent(btn.dataset.editloc));});
   });
+  document.querySelectorAll('[data-duploc]').forEach(btn=>{
+    btn.addEventListener('click',e=>{e.stopPropagation();duplicateLocation(decodeURIComponent(btn.dataset.duploc));});
+  });
   document.querySelectorAll('.loc-card[data-loc]').forEach(card=>{
     card.addEventListener('click',()=>openLocChoiceModal(decodeURIComponent(card.dataset.loc)));
   });
   renderSettingsLoc();
+}
+
+function duplicateLocation(loc){
+  // Strip any existing " (n)" suffix so repeated duplicates behave like Windows file copies
+  const baseMatch=loc.match(/^(.*) \((\d+)\)$/);
+  const base=baseMatch?baseMatch[1]:loc;
+  let n=1;
+  let newName=`${base} (${n})`;
+  while(locations.includes(newName)){n++;newName=`${base} (${n})`;}
+
+  locations.push(newName);
+  const dupAssets=assets.filter(a=>a.loc===loc).map(a=>({...a,id:nextId++,loc:newName}));
+  assets.push(...dupAssets);
+
+  refreshThenSave();
+  showToast('Location duplicated');
 }
 
 function openLocChoiceModal(loc){
