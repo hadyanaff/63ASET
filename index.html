@@ -189,6 +189,17 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
 .detail-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F1F5F9}
 .detail-row:last-child{border-bottom:none}
 .detail-key{font-size:12px;color:var(--text-muted);font-weight:500}
+.form-input:disabled{background:#F1F5F9;color:var(--text-muted);cursor:not-allowed;border-color:var(--border)}
+.settings-actions{display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid #F1F5F9}
+.settings-actions .btn{flex:0 0 auto}
+.settings-edit-only{display:none}
+.settings-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.settings-title-row .settings-title{margin-bottom:0}
+.bg-preview{width:100%;max-width:320px;height:150px;border-radius:12px;border:1.5px dashed var(--border);background:#F8FAFC no-repeat center/cover;margin-bottom:14px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:12px;font-weight:600;text-align:center;overflow:hidden}
+.content{position:relative}
+.content-bg-img{position:absolute;inset:0;background:no-repeat center/cover;z-index:0;display:none;border-radius:0}
+.content-bg-tint{position:absolute;inset:0;background:rgba(240,245,255,0.87);z-index:0;display:none}
+.content>.page{position:relative;z-index:1}
 
 /* ── LOGIN ── */
 .login-wrap{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#0D2E5A 0%,#1A4B8C 50%,#3A7BD5 100%);z-index:999;align-items:center;justify-content:center}
@@ -232,6 +243,18 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
 
 /* ── COLORFUL HEADER STRIP ── */
 .page-header-strip{height:4px;background:linear-gradient(90deg,#FF6B35 0%,#FFCD3C 33%,#22C55E 66%,#3A7BD5 100%);border-radius:4px;margin-bottom:18px}
+
+/* ── LOCATION CHOICE CARDS ── */
+.choice-grid{display:flex;gap:14px;justify-content:center}
+.choice-card{flex:1;background:#F8FAFC;border:2px solid var(--border);border-radius:14px;padding:22px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all 0.2s;text-align:center}
+.choice-card:hover{border-color:var(--primary-light);background:#EFF6FF;transform:translateY(-3px);box-shadow:0 8px 20px rgba(26,75,140,0.15)}
+.choice-icon{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px}
+.choice-title{font-size:14px;font-weight:800;color:var(--primary);letter-spacing:0.04em}
+.choice-sub{font-size:10.5px;color:var(--text-muted);font-weight:500}
+
+/* ── LOC EDIT BTN ── */
+.loc-edit{background:none;border:none;cursor:pointer;color:#CBD5E1;font-size:15px;padding:3px;transition:color 0.15s;margin-right:2px}
+.loc-edit:hover{color:var(--primary)}
 
 /* ── REPORTS ── */
 .report-stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px}
@@ -326,6 +349,8 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
       </div>
     </div>
     <div class="content">
+      <div class="content-bg-img" id="content-bg-img"></div>
+      <div class="content-bg-tint" id="content-bg-tint"></div>
 
       <!-- DASHBOARD -->
       <div class="page active" id="page-dashboard">
@@ -416,9 +441,36 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
       <div class="page" id="page-settings">
         <div class="page-header-strip"></div>
         <div class="settings-section">
-          <div class="settings-title">Organisation</div>
-          <div class="form-row"><label class="form-label">School name</label><input class="form-input" value="SMPN 63 Jakarta"></div>
-          <div class="form-row"><label class="form-label">Admin name</label><input class="form-input" value="M. Hadyan Al Khairi Fatkhar"></div>
+          <div class="settings-title-row">
+            <div class="settings-title">Organisation</div>
+            <button class="btn btn-primary" id="btn-settings-edit"><i class="ti ti-pencil"></i>Edit</button>
+          </div>
+          <div class="form-row"><label class="form-label">Province</label><input class="form-input" id="s-province" data-setting="province" placeholder="e.g. DKI Jakarta" disabled></div>
+          <div class="form-row"><label class="form-label">City</label><input class="form-input" id="s-city" data-setting="city" placeholder="e.g. Jakarta Barat" disabled></div>
+          <div class="form-row"><label class="form-label">Unit</label><input class="form-input" id="s-unit" data-setting="unit" placeholder="e.g. Suku Dinas Jakarta Barat 1" disabled></div>
+          <div class="form-row"><label class="form-label">School name</label><input class="form-input" id="s-schoolname" data-setting="schoolName" placeholder="e.g. SMP Negeri 63 Jakarta" disabled></div>
+          <div class="form-row"><label class="form-label">Unit number</label><input class="form-input" id="s-unitnumber" data-setting="unitNumber" placeholder="e.g. 30801025609063" disabled></div>
+          <div class="form-row"><label class="form-label">Headmaster name</label><input class="form-input" id="s-headmastername" data-setting="headmasterName" placeholder="e.g. Sarip Hidayat, S.Pd." disabled></div>
+          <div class="form-row"><label class="form-label">NIP</label><input class="form-input" id="s-headmasternip" data-setting="headmasterNip" placeholder="e.g. 196610201991031003" disabled></div>
+          <div style="height:14px"></div>
+          <div class="form-row"><label class="form-label">Asset administrator name</label><input class="form-input" id="s-assetadminname" data-setting="assetAdminName" placeholder="e.g. Fauzan Sadat, S.ST., MM." disabled></div>
+          <div class="form-row"><label class="form-label">NIP</label><input class="form-input" id="s-assetadminnip" data-setting="assetAdminNip" placeholder="e.g. 199405022024211036" disabled></div>
+          <div class="form-row"><label class="form-label">Admin name</label><input class="form-input" id="s-adminname" data-setting="adminName" placeholder="Admin name" disabled></div>
+          <div class="settings-actions settings-edit-only" id="settings-edit-actions">
+            <button class="btn btn-primary" id="btn-settings-save"><i class="ti ti-device-floppy"></i>Save</button>
+            <button class="btn" id="btn-settings-back"><i class="ti ti-arrow-back"></i>Back</button>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">Appearance — Background</div>
+          <div class="bg-preview" id="bg-preview">No background image set</div>
+          <input type="file" accept="image/*" id="bg-file-input" style="display:none">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" id="btn-bg-choose"><i class="ti ti-photo"></i>Choose Image</button>
+            <button class="btn btn-primary" id="btn-bg-save" style="display:none"><i class="ti ti-device-floppy"></i>Save Background</button>
+            <button class="btn btn-danger" id="btn-bg-remove"><i class="ti ti-trash"></i>Remove Background</button>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:10px;font-weight:500">Upload a photo of your school to use as the dashboard background. Image is resized automatically to keep things fast.</div>
         </div>
         <div class="settings-section">
           <div class="settings-title">Notifications</div>
@@ -579,6 +631,49 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
   </div>
 </div>
 
+<!-- RENAME LOCATION MODAL -->
+<div class="modal-overlay" id="rename-loc-modal">
+  <div class="modal" style="width:360px">
+    <div class="modal-header">
+      <span class="modal-title">Rename Location</span>
+      <button class="modal-close" id="btn-close-rename-loc-modal"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="rename-loc-old">
+      <div class="form-row"><label class="form-label">Location name</label><input class="form-input" id="rename-loc-name" placeholder="e.g. Computer Lab 3"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="btn-cancel-rename-loc">Cancel</button>
+      <button class="btn btn-primary" id="btn-save-rename-loc"><i class="ti ti-check"></i>Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOCATION CHOICE MODAL (OPEN / DOWNLOAD) -->
+<div class="modal-overlay" id="loc-choice-modal">
+  <div class="modal" style="width:460px">
+    <div class="modal-header">
+      <span class="modal-title" id="loc-choice-title">Location</span>
+      <button class="modal-close" id="btn-close-loc-choice-modal"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="loc-choice-name">
+      <div class="choice-grid">
+        <div class="choice-card" id="btn-choice-open">
+          <div class="choice-icon"><i class="ti ti-eye"></i></div>
+          <div class="choice-title">OPEN</div>
+          <div class="choice-sub">View assets in this location</div>
+        </div>
+        <div class="choice-card" id="btn-choice-download">
+          <div class="choice-icon"><i class="ti ti-download"></i></div>
+          <div class="choice-title">DOWNLOAD</div>
+          <div class="choice-sub">Download KIR document</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- CONFIRM MODAL -->
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal" style="width:340px">
@@ -617,9 +712,14 @@ let locations=[];
 let assets=[];
 let nextId=1;
 let confirmCb=null;
+let settings={
+  province:'',city:'',unit:'',schoolName:'SMPN 63 Jakarta',unitNumber:'',
+  headmasterName:'',headmasterNip:'',assetAdminName:'',assetAdminNip:'',
+  adminName:'M. Hadyan Al Khairi Fatkhar',bgImage:''
+};
 
 async function saveData(){
-  try{ await setDoc(DATA_DOC,{assets,locations,nextId}); }
+  try{ await setDoc(DATA_DOC,{assets,locations,nextId,settings}); }
   catch(e){ console.error('saveData failed:',e); showToast('Save failed — check connection','err'); }
 }
 
@@ -640,9 +740,121 @@ async function loadData(){
       assets=d.assets||[];
       locations=d.locations||[];
       nextId=d.nextId||1;
+      settings={...settings,...(d.settings||{})};
     }
   }catch(e){ showToast('Could not load data','err'); }
+  renderSettingsFields();
+  applyBackground(settings.bgImage);
 }
+
+function renderSettingsFields(){
+  document.querySelectorAll('[data-setting]').forEach(el=>{
+    const key=el.dataset.setting;
+    el.value=settings[key]||'';
+  });
+  renderBgPreview(settings.bgImage);
+}
+
+/* ── SETTINGS: EDIT / SAVE / BACK ── */
+let settingsEditing=false;
+function setSettingsEditing(on){
+  settingsEditing=on;
+  document.querySelectorAll('[data-setting]').forEach(el=>{ el.disabled=!on; });
+  document.getElementById('btn-settings-edit').style.display=on?'none':'';
+  document.getElementById('settings-edit-actions').style.display=on?'flex':'none';
+}
+document.getElementById('btn-settings-edit').addEventListener('click',()=>{
+  setSettingsEditing(true);
+});
+document.getElementById('btn-settings-save').addEventListener('click',()=>{
+  document.querySelectorAll('[data-setting]').forEach(el=>{
+    settings[el.dataset.setting]=el.value.trim();
+  });
+  saveData();
+  setSettingsEditing(false);
+  showToast('Settings saved');
+});
+document.getElementById('btn-settings-back').addEventListener('click',()=>{
+  renderSettingsFields();
+  setSettingsEditing(false);
+});
+setSettingsEditing(false);
+
+/* ── SETTINGS: BACKGROUND IMAGE ── */
+let pendingBgImage=null;
+function renderBgPreview(url){
+  const el=document.getElementById('bg-preview');
+  if(url){
+    el.style.backgroundImage=`url(${url})`;
+    el.textContent='';
+  }else{
+    el.style.backgroundImage='';
+    el.textContent='No background image set';
+  }
+}
+function applyBackground(url){
+  const img=document.getElementById('content-bg-img');
+  const tint=document.getElementById('content-bg-tint');
+  if(!img||!tint)return;
+  if(url){
+    img.style.backgroundImage=`url(${url})`;
+    img.style.display='block';
+    tint.style.display='block';
+  }else{
+    img.style.display='none';
+    tint.style.display='none';
+  }
+}
+function resizeImageFile(file,maxDim,quality){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        let w=img.width,h=img.height;
+        if(w>h&&w>maxDim){h=Math.round(h*maxDim/w);w=maxDim;}
+        else if(h>maxDim){w=Math.round(w*maxDim/h);h=maxDim;}
+        const canvas=document.createElement('canvas');
+        canvas.width=w;canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',quality));
+      };
+      img.onerror=reject;
+      img.src=reader.result;
+    };
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+document.getElementById('btn-bg-choose').addEventListener('click',()=>document.getElementById('bg-file-input').click());
+document.getElementById('bg-file-input').addEventListener('change',async(e)=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  try{
+    const dataUrl=await resizeImageFile(file,1600,0.72);
+    pendingBgImage=dataUrl;
+    renderBgPreview(dataUrl);
+    document.getElementById('btn-bg-save').style.display='';
+  }catch(err){ showToast('Could not read image','err'); }
+});
+document.getElementById('btn-bg-save').addEventListener('click',()=>{
+  if(!pendingBgImage)return;
+  settings.bgImage=pendingBgImage;
+  saveData();
+  applyBackground(settings.bgImage);
+  pendingBgImage=null;
+  document.getElementById('btn-bg-save').style.display='none';
+  showToast('Background updated');
+});
+document.getElementById('btn-bg-remove').addEventListener('click',()=>{
+  settings.bgImage='';
+  pendingBgImage=null;
+  saveData();
+  applyBackground('');
+  renderBgPreview('');
+  document.getElementById('btn-bg-save').style.display='none';
+  showToast('Background removed');
+});
 
 function statusBadge(s){
   const c=s==='Active'?'badge-active':s==='Maintenance'?'badge-maintenance':s==='Repair'?'badge-repair':'badge-inactive';
@@ -716,7 +928,10 @@ function renderLocations(){
     <div class="loc-card" data-loc="${encodeURIComponent(loc)}" style="cursor:pointer">
       <div class="loc-card-top">
         <div class="loc-icon"><i class="ti ti-map-pin"></i></div>
-        <button class="loc-del" data-delloc="${encodeURIComponent(loc)}"><i class="ti ti-trash"></i></button>
+        <div>
+          <button class="loc-edit" data-editloc="${encodeURIComponent(loc)}"><i class="ti ti-edit"></i></button>
+          <button class="loc-del" data-delloc="${encodeURIComponent(loc)}"><i class="ti ti-trash"></i></button>
+        </div>
       </div>
       <div class="loc-name">${loc}</div>
       <div class="loc-count">${locCounts[loc]||0} asset${(locCounts[loc]||0)!==1?'s':''}</div>
@@ -729,11 +944,52 @@ function renderLocations(){
   document.querySelectorAll('[data-delloc]').forEach(btn=>{
     btn.addEventListener('click',e=>{e.stopPropagation();confirmDeleteLoc(decodeURIComponent(btn.dataset.delloc));});
   });
+  document.querySelectorAll('[data-editloc]').forEach(btn=>{
+    btn.addEventListener('click',e=>{e.stopPropagation();openRenameLocModal(decodeURIComponent(btn.dataset.editloc));});
+  });
   document.querySelectorAll('.loc-card[data-loc]').forEach(card=>{
-    card.addEventListener('click',()=>openLocDetailModal(decodeURIComponent(card.dataset.loc)));
+    card.addEventListener('click',()=>openLocChoiceModal(decodeURIComponent(card.dataset.loc)));
   });
   renderSettingsLoc();
 }
+
+function openLocChoiceModal(loc){
+  document.getElementById('loc-choice-title').textContent=loc;
+  document.getElementById('loc-choice-name').value=loc;
+  document.getElementById('loc-choice-modal').classList.add('open');
+}
+document.getElementById('btn-close-loc-choice-modal').addEventListener('click',()=>document.getElementById('loc-choice-modal').classList.remove('open'));
+document.getElementById('btn-choice-open').addEventListener('click',()=>{
+  const loc=document.getElementById('loc-choice-name').value;
+  document.getElementById('loc-choice-modal').classList.remove('open');
+  openLocDetailModal(loc);
+});
+document.getElementById('btn-choice-download').addEventListener('click',()=>{
+  const loc=document.getElementById('loc-choice-name').value;
+  document.getElementById('loc-choice-modal').classList.remove('open');
+  downloadLocationKIR(loc);
+});
+
+function openRenameLocModal(oldName){
+  document.getElementById('rename-loc-old').value=oldName;
+  document.getElementById('rename-loc-name').value=oldName;
+  document.getElementById('rename-loc-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('rename-loc-name').focus(),50);
+}
+document.getElementById('btn-close-rename-loc-modal').addEventListener('click',()=>document.getElementById('rename-loc-modal').classList.remove('open'));
+document.getElementById('btn-cancel-rename-loc').addEventListener('click',()=>document.getElementById('rename-loc-modal').classList.remove('open'));
+document.getElementById('btn-save-rename-loc').addEventListener('click',()=>{
+  const oldName=document.getElementById('rename-loc-old').value;
+  const newName=document.getElementById('rename-loc-name').value.trim();
+  if(!newName)return;
+  if(newName!==oldName&&locations.includes(newName)){showToast('Location already exists','err');return;}
+  const idx=locations.indexOf(oldName);
+  if(idx>=0)locations[idx]=newName;
+  assets.forEach(a=>{if(a.loc===oldName)a.loc=newName;});
+  document.getElementById('rename-loc-modal').classList.remove('open');
+  refreshThenSave();showToast('Location renamed');
+});
+document.getElementById('rename-loc-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-save-rename-loc').click();});
 
 function openLocDetailModal(loc){
   document.getElementById('locdetail-title').textContent=loc;
@@ -756,6 +1012,132 @@ function openLocDetailModal(loc){
   </tr>`).join('')||'<tr><td colspan="13" class="empty-state"><i class="ti ti-inbox"></i>No assets in this location yet.</td></tr>';
   document.getElementById('locdetail-modal').classList.add('open');
 }
+const idMonths=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+function todayIndo(){
+  const d=new Date();
+  return `${d.getDate()} ${idMonths[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function downloadLocationKIR(loc){
+  const rows=assets.filter(a=>a.loc===loc);
+  const condMark=(a,key)=>a.condition===key?'&#10003;':'';
+  const rowsHtml=rows.map((a,i)=>`
+    <tr>
+      <td style="text-align:center">${i+1}</td>
+      <td>${a.name||''}</td>
+      <td style="text-align:center">1</td>
+      <td>${a.tag||''}</td>
+      <td>${a.typeSeri||''}</td>
+      <td></td>
+      <td>${a.bahan||''}</td>
+      <td style="text-align:center">${a.year||''}</td>
+      <td>${a.kodeBarang||''}</td>
+      <td style="text-align:center">${condMark(a,'Good')}</td>
+      <td style="text-align:center">${condMark(a,'Bad')}</td>
+      <td style="text-align:center">${condMark(a,'Broken')}</td>
+      <td>${a.sumberDana||''}</td>
+      <td>${a.keterangan||''}</td>
+    </tr>`).join('')||'<tr><td colspan="14" style="text-align:center">Tidak ada aset di lokasi ini.</td></tr>';
+
+  const html=`<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>KIR - ${loc}</title>
+<style>
+  @page Section1{size:841.9pt 595.3pt;mso-page-orientation:landscape;margin:36pt 36pt 36pt 36pt;}
+  div.Section1{page:Section1;}
+  body{font-family:Arial,sans-serif;font-size:11px;}
+  table{border-collapse:collapse;width:100%;}
+  td,th{border:1px solid #000;padding:3px 4px;font-size:10px;vertical-align:middle;}
+  th{text-align:center;font-weight:bold;}
+  .title{text-align:center;font-weight:bold;font-size:14px;text-decoration:underline;margin-bottom:14px;}
+  .hdr-table{width:100%;}
+  .hdr-table td{border:none;padding:1px 4px;font-size:11px;vertical-align:top;}
+  .hdr-label{width:150px;}
+  .hdr-sep{width:14px;}
+  .hdr-right-label{width:150px;}
+  .sig-table{border:none;margin-top:30px;width:100%;}
+  .sig-table td{border:none;vertical-align:top;font-size:11px;padding:2px 4px;}
+  .sig-left{width:38%;text-align:left;}
+  .sig-mid{width:24%;}
+  .sig-right{width:38%;text-align:left;}
+</style></head>
+<body>
+<div class="Section1">
+  <div class="title">KARTU INVENTARIS RUANGAN</div>
+  <table class="hdr-table">
+    <tr>
+      <td class="hdr-label">PROVINSI</td><td>: ${settings.province||''}</td>
+      <td class="hdr-sep"></td>
+      <td class="hdr-right-label">NO. KODE UNIT / SATKER</td><td>: ${settings.unitNumber||''}</td>
+    </tr>
+    <tr>
+      <td class="hdr-label">KOTAMADYA</td><td>: ${settings.city||''}</td>
+      <td class="hdr-sep"></td>
+      <td class="hdr-right-label">RUANGAN</td><td>: ${loc}</td>
+    </tr>
+    <tr>
+      <td class="hdr-label">U N I T</td><td>: ${settings.unit||''}</td>
+      <td class="hdr-sep"></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td class="hdr-label">SATUAN KERJA</td><td>: ${settings.schoolName||''}</td>
+      <td class="hdr-sep"></td><td></td><td></td>
+    </tr>
+  </table>
+  <br>
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2">NO.</th>
+        <th rowspan="2">NAMA BARANG</th>
+        <th rowspan="2">JUMLAH</th>
+        <th rowspan="2">MEREK/<br>MODEL</th>
+        <th rowspan="2">NO. SERI</th>
+        <th rowspan="2">UKURAN</th>
+        <th rowspan="2">BAHAN</th>
+        <th rowspan="2">TH. PENERIMAAN/<br>PEMBELIAN/<br>PEMBUATAN</th>
+        <th rowspan="2">NO. KODE<br>BARANG</th>
+        <th colspan="3">KONDISI</th>
+        <th rowspan="2">SUMBER<br>DANA</th>
+        <th rowspan="2">KETERANGAN</th>
+      </tr>
+      <tr><th>BAIK</th><th>KURANG<br>BAIK</th><th>RUSAK</th></tr>
+    </thead>
+    <tbody>${rowsHtml}</tbody>
+  </table>
+  <table class="sig-table">
+    <tr>
+      <td class="sig-left">
+        Mengetahui,<br>
+        Kepala SMP Negeri 63 Jakarta
+        <br><br><br><br>
+        <u>${settings.headmasterName||'&nbsp;'}</u><br>
+        NIP. ${settings.headmasterNip||''}
+      </td>
+      <td class="sig-mid">&nbsp;</td>
+      <td class="sig-right">
+        Jakarta, ${todayIndo()}<br>
+        Pengurus Barang
+        <br><br><br><br>
+        <u>${settings.assetAdminName||'&nbsp;'}</u><br>
+        NIP. ${settings.assetAdminNip||''}
+      </td>
+    </tr>
+  </table>
+</div>
+</body></html>`;
+
+  const blob=new Blob(['\ufeff',html],{type:'application/msword'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`KIR_${loc.replace(/[^a-z0-9]+/gi,'_')}.doc`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 document.getElementById('btn-close-locdetail-modal').addEventListener('click',()=>document.getElementById('locdetail-modal').classList.remove('open'));
 document.getElementById('btn-close-locdetail').addEventListener('click',()=>document.getElementById('locdetail-modal').classList.remove('open'));
 
