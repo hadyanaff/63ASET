@@ -263,9 +263,35 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
 .report-stat{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px}
 .report-stat-label{font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:4px}
 .report-stat-val{font-size:22px;font-weight:800;color:var(--text)}
+
+/* ── DASHBOARD UPGRADE ── */
+.dash-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+.dash-title{font-size:24px;font-weight:800;color:var(--primary-dark);line-height:1.2}
+.dash-sub{font-size:12px;color:var(--text-muted);margin-top:4px;font-weight:500}
+.reminder-box{width:340px;max-width:100%;background:linear-gradient(135deg,#F87171,#DC2626);border-radius:14px;padding:12px 14px;color:#fff;box-shadow:0 6px 16px rgba(220,38,38,.3)}
+.reminder-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.reminder-label{font-size:12px;font-weight:800;letter-spacing:.08em;display:flex;align-items:center;gap:6px}
+.reminder-save{background:#fff;color:#DC2626;border:0;border-radius:8px;padding:4px 11px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.reminder-save:hover{background:#FEE2E2}
+.reminder-box textarea{width:100%;min-height:84px;resize:vertical;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);border-radius:9px;padding:8px 10px;color:#fff;font-family:inherit;font-size:16px;font-weight:800;line-height:1.4;outline:none}
+.reminder-box textarea::placeholder{color:rgba(255,255,255,.75);font-weight:700}
+.reminder-box textarea:focus{background:rgba(255,255,255,.26);border-color:#fff}
+.metric-card.blue{background:linear-gradient(135deg,#3B82F6,#1D4ED8);border-color:transparent;box-shadow:0 6px 16px rgba(37,99,235,.28)}
+.metric-card.green{background:linear-gradient(135deg,#2DD4BF,#0EA5E9);border-color:transparent;box-shadow:0 6px 16px rgba(14,165,233,.28)}
+.metric-card.amber{background:linear-gradient(135deg,#FBBF24,#F97316);border-color:transparent;box-shadow:0 6px 16px rgba(249,115,22,.28)}
+.metric-card.red{background:linear-gradient(135deg,#FB7185,#EF4444);border-color:transparent;box-shadow:0 6px 16px rgba(239,68,68,.28)}
+.metric-card .metric-label,.metric-card .metric-value,.metric-card .metric-sub{color:#fff!important}
+.metric-card::before{background:#fff!important;opacity:.16!important}
+.metric-card .metric-icon{opacity:.3!important;color:#fff;font-size:46px;right:16px}
+.charts-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+.charts-2{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-bottom:22px}
+.chart-box{position:relative;height:230px}
+@media(max-width:1100px){.charts-3,.charts-2{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.charts-3,.charts-2{grid-template-columns:1fr}.reminder-box{width:100%}}
 </style>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
 <!-- LOGIN SCREEN -->
 <div class="login-wrap show" id="login-wrap">
@@ -357,6 +383,19 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
       <!-- DASHBOARD -->
       <div class="page active" id="page-dashboard">
         <div class="page-header-strip"></div>
+        <div class="dash-head">
+          <div>
+            <div class="dash-title">Sistem Inventarisasi Aset Terpadu</div>
+            <div class="dash-sub">Ringkasan aset, kondisi, dan pengadaan</div>
+          </div>
+          <div class="reminder-box">
+            <div class="reminder-head">
+              <span class="reminder-label"><i class="ti ti-bell-ringing"></i>REMINDER :</span>
+              <button class="reminder-save" id="btn-save-reminder"><i class="ti ti-device-floppy"></i> Simpan</button>
+            </div>
+            <textarea id="reminder-text" placeholder="Tulis hal yang belum ditambahkan ke website..."></textarea>
+          </div>
+        </div>
         <div class="metrics-row">
           <div class="metric-card blue">
             <div class="metric-label"><i class="ti ti-devices"></i>Total Assets</div>
@@ -381,6 +420,18 @@ tbody td{padding:11px 14px;vertical-align:middle;overflow:hidden;text-overflow:e
             <div class="metric-value" id="m-repair">0</div>
             <div class="metric-sub">Attention needed</div>
             <i class="ti ti-alert-triangle metric-icon"></i>
+          </div>
+        </div>
+        <div class="charts-3">
+          <div class="card"><div class="section-header"><span class="section-title">Status Aset</span></div><div class="chart-box"><canvas id="ch-status"></canvas></div></div>
+          <div class="card"><div class="section-header"><span class="section-title">Persentase Kategori Aset</span></div><div class="chart-box"><canvas id="ch-type"></canvas></div></div>
+          <div class="card"><div class="section-header"><span class="section-title">Pengadaan Aset per Tahun</span></div><div class="chart-box"><canvas id="ch-year"></canvas></div></div>
+        </div>
+        <div class="charts-2">
+          <div class="card"><div class="section-header"><span class="section-title">Aset per Lokasi</span></div><div class="chart-box"><canvas id="ch-loc"></canvas></div></div>
+          <div class="card">
+            <div class="section-header"><span class="section-title">Perlu Perhatian</span><button class="btn btn-primary" style="padding:5px 11px;font-size:11px" onclick="document.getElementById('nav-maintenance').click()">Lihat Semua</button></div>
+            <table><thead><tr><th style="width:42%">Nama Barang</th><th style="width:28%">Lokasi</th><th style="width:10%;text-align:center">Jml</th><th style="width:20%">Status</th></tr></thead><tbody id="attn-tbody"></tbody></table>
           </div>
         </div>
         <div class="summary-grid">
@@ -721,12 +772,12 @@ let confirmCb=null;
 let settings={
   province:'',city:'',unit:'',schoolName:'SMPN 63 Jakarta',unitNumber:'',
   headmasterName:'',headmasterNip:'',assetAdminName:'',assetAdminNip:'',
-  adminName:'M. Hadyan Al Khairi Fatkhar',bgImage:''
+  adminName:'M. Hadyan Al Khairi Fatkhar',bgImage:'',reminder:''
 };
 
 async function saveData(){
-  try{ await setDoc(DATA_DOC,{assets,locations,nextId,settings}); }
-  catch(e){ console.error('saveData failed:',e); showToast('Save failed — check connection','err'); }
+  try{ await setDoc(DATA_DOC,{assets,locations,nextId,settings}); return true; }
+  catch(e){ console.error('saveData failed:',e); showToast('Save failed — check connection','err'); return false; }
 }
 
 // Refresh the UI immediately with the current in-memory state, then persist
@@ -750,6 +801,7 @@ async function loadData(){
     }
   }catch(e){ showToast('Could not load data','err'); }
   renderSettingsFields();
+  renderReminder();
   applyBackground(settings.bgImage);
 }
 
@@ -898,6 +950,63 @@ function renderDashboard(){
   document.getElementById('recent-tbody').innerHTML=recent.map(a=>`<tr data-edit="${a.id}" style="cursor:pointer">
     <td>${assetIconEl(a.name)}<span style="vertical-align:middle;font-weight:600">${a.name}</span></td>
     <td style="color:var(--text-muted)">${a.name}</td><td>${a.user}</td><td>${a.loc}</td><td style="text-align:center;font-weight:700">${qtyOf(a)}</td><td>${statusBadge(a.status)}</td></tr>`).join('')||'<tr><td colspan="6" class="empty-state"><i class="ti ti-inbox"></i>No assets yet. Add your first one!</td></tr>';
+}
+
+
+/* ── REMINDER ── */
+function renderReminder(){const el=document.getElementById('reminder-text');if(el)el.value=settings.reminder||'';}
+document.getElementById('btn-save-reminder').addEventListener('click',async()=>{
+  settings.reminder=document.getElementById('reminder-text').value.trim();
+  if(await saveData())showToast('Reminder disimpan');
+});
+
+/* ── CHARTS ── */
+const charts={};
+const palette=['#3B82F6','#22C55E','#F59E0B','#EF4444','#8B5CF6','#06B6D4','#EC4899','#64748B'];
+const centerText={id:'centerText',afterDraw(c){
+  const t=c.options.plugins.centerLabel;if(c.config.type!=='doughnut'||t==null)return;
+  const{ctx,chartArea:a}=c,x=(a.left+a.right)/2,y=(a.top+a.bottom)/2;
+  ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='#1E293B';ctx.font='800 22px Plus Jakarta Sans,sans-serif';ctx.fillText(t,x,y-6);
+  ctx.fillStyle='#64748B';ctx.font='500 10px Plus Jakarta Sans,sans-serif';ctx.fillText('Total',x,y+13);ctx.restore();}};
+function mkChart(id,cfg){
+  const el=document.getElementById(id);if(!el||!window.Chart)return;
+  if(charts[id])charts[id].destroy();
+  charts[id]=new Chart(el,cfg);
+}
+function sumBy(keyFn){const m={};assets.forEach(a=>{const k=keyFn(a);m[k]=(m[k]||0)+qtyOf(a);});return m;}
+function renderCharts(){
+  if(!window.Chart)return;
+  Chart.defaults.font.family="'Plus Jakarta Sans',sans-serif";Chart.defaults.font.size=11;
+  Chart.register(centerText);
+  const donutOpts=(total)=>({responsive:true,maintainAspectRatio:false,cutout:'62%',
+    plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:10}},centerLabel:String(total)}});
+
+  const stLabels=['Active','Maintenance','Repair','Inactive'];
+  const stCols=['#22C55E','#F59E0B','#EF4444','#94A3B8'];
+  const st=sumBy(a=>a.status||'Inactive');
+  const stData=stLabels.map(l=>st[l]||0);
+  const stTotal=stData.reduce((x,y)=>x+y,0);
+  mkChart('ch-status',{type:'doughnut',data:{labels:stLabels,datasets:[{data:stData,backgroundColor:stCols,borderWidth:2,borderColor:'#fff'}]},options:donutOpts(stTotal)});
+
+  const ty=Object.entries(sumBy(a=>a.name||'Lainnya')).sort((a,b)=>b[1]-a[1]);
+  const top=ty.slice(0,6),rest=ty.slice(6).reduce((s,e)=>s+e[1],0);
+  if(rest)top.push(['Lainnya',rest]);
+  mkChart('ch-type',{type:'doughnut',data:{labels:top.map(e=>e[0]),datasets:[{data:top.map(e=>e[1]),backgroundColor:palette,borderWidth:2,borderColor:'#fff'}]},options:donutOpts(stTotal)});
+
+  const yr=Object.entries(sumBy(a=>a.year||'-')).sort((a,b)=>String(a[0]).localeCompare(String(b[0])));
+  mkChart('ch-year',{type:'line',data:{labels:yr.map(e=>e[0]),datasets:[{label:'Jumlah aset',data:yr.map(e=>e[1]),borderColor:'#22C55E',backgroundColor:'rgba(34,197,94,.18)',fill:true,tension:.35,pointBackgroundColor:'#fff',pointBorderColor:'#16A34A',pointBorderWidth:2,pointRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#EEF2F7'}},x:{grid:{display:false}}}}});
+
+  const lc=Object.entries(sumBy(a=>a.loc||'-')).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  mkChart('ch-loc',{type:'bar',data:{labels:lc.map(e=>e[0]),datasets:[{data:lc.map(e=>e[1]),backgroundColor:lc.map((_,i)=>palette[i%palette.length]),borderRadius:6,maxBarThickness:18}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,grid:{color:'#EEF2F7'}},y:{grid:{display:false}}}}});
+
+  const att=assets.filter(a=>a.status==='Maintenance'||a.status==='Repair').slice(0,5);
+  document.getElementById('attn-tbody').innerHTML=att.map(a=>`<tr>
+    <td style="font-weight:600">${a.name}</td><td style="color:var(--text-muted)">${a.loc}</td>
+    <td style="text-align:center;font-weight:700">${qtyOf(a)}</td><td>${statusBadge(a.status)}</td></tr>`).join('')
+    ||'<tr><td colspan="4" class="empty-state"><i class="ti ti-circle-check"></i>Semua aset dalam kondisi baik</td></tr>';
 }
 
 function populateTypeFilter(){
@@ -1205,7 +1314,7 @@ function renderReports(){
   }).join('');
 }
 
-function refreshAll(){renderDashboard();renderAssets();renderLocations();renderMaintenance();renderReports();}
+function refreshAll(){renderDashboard();renderCharts();renderAssets();renderLocations();renderMaintenance();renderReports();}
 
 const navIds=['dashboard','assets','locations','reports','maintenance','settings'];
 function showPage(name){
